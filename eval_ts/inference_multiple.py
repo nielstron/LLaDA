@@ -257,7 +257,8 @@ def main(
         input_ids = tokenizer(user_input)['input_ids']
         input_ids = torch.tensor(input_ids).to(device).unsqueeze(0)
         prompt = input_ids
-        print(user_input)
+        if trace:
+            print(user_input)
         start = time.time()
         gen_length = max_tokens
         with torch.no_grad():
