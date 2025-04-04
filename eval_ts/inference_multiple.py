@@ -197,7 +197,6 @@ def main(
                 {
                     "device_map": "auto",
                     "torch_dtype": torch.bfloat16,
-                    "attn_implementation": "flash_attention_2",
                 }
                 if device == "cuda"
                 else {"device_map": device}
