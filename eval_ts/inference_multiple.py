@@ -245,15 +245,18 @@ def main(
         input_ids = tokenizer(user_input)['input_ids']
         input_ids = torch.tensor(input_ids).to(device).unsqueeze(0)
         prompt = input_ids
+        print(prompt)
         start = time.time()
         gen_length = max_tokens
         with torch.no_grad():
             out = generate(model, prompt, steps=steps, gen_length=gen_length, block_length=32, temperature=temp, cfg_scale=0., remasking='low_confidence')
             code = tokenizer.batch_decode(out[:, prompt.shape[1]:], skip_special_tokens=True)[0]
 
+        if trace:
+            print(code)
         end = time.time()
         time_taken = end - start
-        extracted = extract_code(prompt + code, human_readable_target_lang, 0)
+        extracted = extract_code(user_input + code, human_readable_target_lang, 0)
         extracted = cutoff(extracted)
         tests: str = instance["tests"]
         if tests.strip().startswith("}") and extracted.strip().endswith("}"):
