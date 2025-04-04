@@ -9,8 +9,10 @@ import multiprocessing
 import os
 import time
 import traceback
+import random
 
 import fire
+import numpy as np
 import torch
 from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer, AutoModel
@@ -19,6 +21,15 @@ from datasets import load_dataset
 import re
 
 from generate import generate
+
+def set_seed(seed):
+    torch.manual_seed(seed)
+    random.seed(seed)
+    np.random.seed(seed)
+
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
 
 def extract_code(output: str, humanreadable_target_language: str, nth: int):
     prefix = f"```{humanreadable_target_language.lower()}\n"
@@ -118,6 +129,7 @@ def main(
     translation_source_lang=None,
     steps=128,
 ):
+    set_seed(seed)
     if isinstance(task_id, int):
         task_id = str(task_id)
     if isinstance(task_id, str):
@@ -245,7 +257,7 @@ def main(
         input_ids = tokenizer(user_input)['input_ids']
         input_ids = torch.tensor(input_ids).to(device).unsqueeze(0)
         prompt = input_ids
-        print(prompt)
+        print(user_input)
         start = time.time()
         gen_length = max_tokens
         with torch.no_grad():
